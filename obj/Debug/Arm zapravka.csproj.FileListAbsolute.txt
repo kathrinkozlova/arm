@@ -1,0 +1,14 @@
+D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\Arm zapravka.exe.config
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm zapravka.csprojResolveAssemblyReference.cache
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.Form1.resources
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.Properties.Resources.resources
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm zapravka.csproj.GenerateResource.Cache
+D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\Arm zapravka.exe
+D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\Arm zapravka.pdb
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm zapravka.exe
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm zapravka.pdb
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.Form2.resources
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\RdlCompile.cache
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\RdlCompile.compiled
+D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\fuel.sql.mdf
+D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\fuel.sql_log.ldf
