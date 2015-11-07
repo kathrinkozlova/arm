@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 
@@ -23,7 +17,7 @@ namespace Arm_zapravka
         DataTable GetFuel()
         {
             comboBox1.BringToFront();            
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
+            new MySqlConnectionStringBuilder();
             const string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             var zaprosF = @"Select * from Виды_топлива";
@@ -47,7 +41,7 @@ namespace Arm_zapravka
 
         DataTable GetRab()
         {  
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
+            new MySqlConnectionStringBuilder();
             string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             string zaprosR = @"Select * from Рабочие";
@@ -72,7 +66,7 @@ namespace Arm_zapravka
         DataTable GetDol()
         {
 
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
+            new MySqlConnectionStringBuilder();
             string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             string zaprosD = @"Select * from Должности";
@@ -97,8 +91,8 @@ namespace Arm_zapravka
         DataTable GetClient()
         {
 
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
-            string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
+            new MySqlConnectionStringBuilder();
+            var connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             string zaprosP = @"Select * from Клиенты";
 
@@ -121,7 +115,7 @@ namespace Arm_zapravka
 
         DataTable GetSale()
         {
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
+            new MySqlConnectionStringBuilder();
             string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             string zaprosP = @"Select * from Скидки";
@@ -146,7 +140,7 @@ namespace Arm_zapravka
         DataTable GetPostavka()
         {
 
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
+            new MySqlConnectionStringBuilder();
             string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             string zaprosP = @"Select * from Поставка_топлива";
@@ -171,7 +165,7 @@ namespace Arm_zapravka
         DataTable GetPostavshiki()
         {
 
-            MySqlConnectionStringBuilder mySql = new MySqlConnectionStringBuilder();
+            new MySqlConnectionStringBuilder();
             string connection = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
 
             string zaprosP = @"Select * from Поставщики";
@@ -209,10 +203,13 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Вид_топлива", dataGridView2.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Цена", dataGridView2.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Запасы_топлива", dataGridView2.CurrentRow.Cells[3].Value);
-                    cmd.Parameters.AddWithValue("@Код_поставки", dataGridView2.CurrentRow.Cells[4].Value);
+                    if (dataGridView2.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Вид_топлива", dataGridView2.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Цена", dataGridView2.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Запасы_топлива", dataGridView2.CurrentRow.Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Код_поставки", dataGridView2.CurrentRow.Cells[4].Value);
+                    }
 
                     cmd.ExecuteNonQuery();
                 }
@@ -260,11 +257,14 @@ namespace Arm_zapravka
                                    WHERE Код_топлива = @Код_топлива";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_топлива", dataGridView2.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Вид_топлива", dataGridView2.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Цена", dataGridView2.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Запасы_топлива", dataGridView2.CurrentRow.Cells[3].Value);
-                    cmd.Parameters.AddWithValue("@Код_поставки", dataGridView2.CurrentRow.Cells[4].Value);
+                    if (dataGridView2.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_топлива", dataGridView2.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Вид_топлива", dataGridView2.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Цена", dataGridView2.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Запасы_топлива", dataGridView2.CurrentRow.Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Код_поставки", dataGridView2.CurrentRow.Cells[4].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -292,7 +292,8 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Должность", dataGridView3.CurrentRow.Cells[1].Value);
+                    if (dataGridView3.CurrentRow != null)
+                        cmd.Parameters.AddWithValue("@Должность", dataGridView3.CurrentRow.Cells[1].Value);
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -339,8 +340,11 @@ namespace Arm_zapravka
                                    WHERE Код_должности = @Код_должности";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_должности", dataGridView3.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Должность", dataGridView3.CurrentRow.Cells[1].Value);
+                    if (dataGridView3.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_должности", dataGridView3.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Должность", dataGridView3.CurrentRow.Cells[1].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -367,14 +371,17 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Фамилия", dataGridView4.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Имя", dataGridView4.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Отчество", dataGridView4.CurrentRow.Cells[3].Value);
-                    cmd.Parameters.AddWithValue("@Пол", dataGridView4.CurrentRow.Cells[4].Value);
-                    cmd.Parameters.AddWithValue("@Возраст", dataGridView4.CurrentRow.Cells[5].Value);
-                    cmd.Parameters.AddWithValue("@Код_должности", dataGridView4.CurrentRow.Cells[6].Value);
-                    cmd.Parameters.AddWithValue("@Телефон", dataGridView4.CurrentRow.Cells[7].Value);
-                    cmd.Parameters.AddWithValue("@Оклад", dataGridView4.CurrentRow.Cells[8].Value);
+                    if (dataGridView4.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView4.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Имя", dataGridView4.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Отчество", dataGridView4.CurrentRow.Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Пол", dataGridView4.CurrentRow.Cells[4].Value);
+                        cmd.Parameters.AddWithValue("@Возраст", dataGridView4.CurrentRow.Cells[5].Value);
+                        cmd.Parameters.AddWithValue("@Код_должности", dataGridView4.CurrentRow.Cells[6].Value);
+                        cmd.Parameters.AddWithValue("@Телефон", dataGridView4.CurrentRow.Cells[7].Value);
+                        cmd.Parameters.AddWithValue("@Оклад", dataGridView4.CurrentRow.Cells[8].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -421,15 +428,18 @@ namespace Arm_zapravka
                                    WHERE Код_рабочего = @Код_рабочего";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_рабочего", dataGridView4.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Фамилия", dataGridView4.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Имя", dataGridView4.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Отчество", dataGridView4.CurrentRow.Cells[3].Value);
-                    cmd.Parameters.AddWithValue("@Пол", dataGridView4.CurrentRow.Cells[4].Value);
-                    cmd.Parameters.AddWithValue("@Возраст", dataGridView4.CurrentRow.Cells[5].Value);
-                    cmd.Parameters.AddWithValue("@Код_должности", dataGridView4.CurrentRow.Cells[6].Value);
-                    cmd.Parameters.AddWithValue("@Телефон", dataGridView4.CurrentRow.Cells[7].Value);
-                    cmd.Parameters.AddWithValue("@Оклад", dataGridView4.CurrentRow.Cells[8].Value);
+                    if (dataGridView4.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_рабочего", dataGridView4.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView4.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Имя", dataGridView4.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Отчество", dataGridView4.CurrentRow.Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Пол", dataGridView4.CurrentRow.Cells[4].Value);
+                        cmd.Parameters.AddWithValue("@Возраст", dataGridView4.CurrentRow.Cells[5].Value);
+                        cmd.Parameters.AddWithValue("@Код_должности", dataGridView4.CurrentRow.Cells[6].Value);
+                        cmd.Parameters.AddWithValue("@Телефон", dataGridView4.CurrentRow.Cells[7].Value);
+                        cmd.Parameters.AddWithValue("@Оклад", dataGridView4.CurrentRow.Cells[8].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -456,11 +466,14 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Фамилия", dataGridView1.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Имя", dataGridView1.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);
-                    cmd.Parameters.AddWithValue("@Телефон", dataGridView1.CurrentRow.Cells[4].Value);
-                    cmd.Parameters.AddWithValue("@Код_накопительной_карты", dataGridView1.CurrentRow.Cells[5].Value);
+                    if (dataGridView1.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView1.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Имя", dataGridView1.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Телефон", dataGridView1.CurrentRow.Cells[4].Value);
+                        cmd.Parameters.AddWithValue("@Код_накопительной_карты", dataGridView1.CurrentRow.Cells[5].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -483,7 +496,8 @@ namespace Arm_zapravka
 
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_клиента", dataGridView1.CurrentRow.Cells[0].Value);
+                    if (dataGridView1.CurrentRow != null)
+                        cmd.Parameters.AddWithValue("@Код_клиента", value: dataGridView1.CurrentRow.Cells[0].Value);
                     cmd.ExecuteNonQuery();
                 }
 
@@ -507,12 +521,15 @@ namespace Arm_zapravka
                                    WHERE Код_клиента = @Код_клиента";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_клиента", dataGridView1.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Фамилия", dataGridView1.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Имя", dataGridView1.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);
-                    cmd.Parameters.AddWithValue("@Телефон", dataGridView1.CurrentRow.Cells[4].Value);
-                    cmd.Parameters.AddWithValue("@Код_карты", dataGridView1.CurrentRow.Cells[5].Value);
+                    if (dataGridView1.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_клиента", dataGridView1.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView1.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Имя", dataGridView1.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Телефон", dataGridView1.CurrentRow.Cells[4].Value);
+                        cmd.Parameters.AddWithValue("@Код_карты", dataGridView1.CurrentRow.Cells[5].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -539,9 +556,12 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Количество_заправок", dataGridView5.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Код_клиента", dataGridView5.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Скидка", dataGridView5.CurrentRow.Cells[3].Value);
+                    if (dataGridView5.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Количество_заправок", dataGridView5.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Код_клиента", dataGridView5.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Скидка", dataGridView5.CurrentRow.Cells[3].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -588,10 +608,13 @@ namespace Arm_zapravka
                                    WHERE Код_карты = @Код_карты";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_карты", dataGridView5.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Количество_заправок", dataGridView5.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Код_клиента", dataGridView5.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Скидка", dataGridView5.CurrentRow.Cells[3].Value);
+                    if (dataGridView5.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_карты", dataGridView5.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Количество_заправок", dataGridView5.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Код_клиента", dataGridView5.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Скидка", dataGridView5.CurrentRow.Cells[3].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -618,8 +641,11 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Наименование_организации", dataGridView6.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Телефон_организации", dataGridView6.CurrentRow.Cells[2].Value);
+                    if (dataGridView6.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Наименование_организации", dataGridView6.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Телефон_организации", dataGridView6.CurrentRow.Cells[2].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -666,9 +692,12 @@ namespace Arm_zapravka
                                    WHERE Код_поставщика = @Код_поставщика";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView6.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Наименование_организации", dataGridView6.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Телефон_организации", dataGridView6.CurrentRow.Cells[2].Value);
+                    if (dataGridView6.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView6.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Наименование_организации", dataGridView6.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Телефон_организации", dataGridView6.CurrentRow.Cells[2].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -695,9 +724,12 @@ namespace Arm_zapravka
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
                     //создаем параметры и добавляем их в коллекцию
-                    cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView7.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Количество_поставки", dataGridView7.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Код_топлива", dataGridView7.CurrentRow.Cells[3].Value);
+                    if (dataGridView7.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView7.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Количество_поставки", dataGridView7.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Код_топлива", dataGridView7.CurrentRow.Cells[3].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -744,10 +776,13 @@ namespace Arm_zapravka
                                    WHERE Код_поставки = @Код_поставки";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_поставки", dataGridView7.CurrentRow.Cells[0].Value);
-                    cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView7.CurrentRow.Cells[1].Value);
-                    cmd.Parameters.AddWithValue("@Количество_поставки", dataGridView7.CurrentRow.Cells[2].Value);
-                    cmd.Parameters.AddWithValue("@Код_топлива", dataGridView7.CurrentRow.Cells[3].Value);
+                    if (dataGridView7.CurrentRow != null)
+                    {
+                        cmd.Parameters.AddWithValue("@Код_поставки", dataGridView7.CurrentRow.Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView7.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Количество_поставки", dataGridView7.CurrentRow.Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Код_топлива", dataGridView7.CurrentRow.Cells[3].Value);
+                    }
                     cmd.ExecuteNonQuery();
                 }
 
@@ -862,19 +897,19 @@ namespace Arm_zapravka
               { 
                   case 0:
                       comboBox1.Items.Clear();
-                      string[] searchFuel = { "Поиск по коду топлива", "Поиск по названию топлива", "Поиск по запасам топлива", "Поиск по коду поставки" };
+                      object[] searchFuel = { "Поиск по коду топлива", "Поиск по названию топлива", "Поиск по запасам топлива", "Поиск по коду поставки" };
                       comboBox1.Items.AddRange(searchFuel);
                       comboBox1.SelectedIndex = 0;
                       break;
                   case 1:
                       comboBox1.Items.Clear();
-                      string[] searchDol = { "Поиск по коду должности", "Поиск по названю должности"};
+                      object[] searchDol = { "Поиск по коду должности", "Поиск по названю должности"};
                       comboBox1.Items.AddRange(searchDol);
                       comboBox1.SelectedIndex = 0;
                       break;
                   case 2:
                       comboBox1.Items.Clear();
-                      string[] searchRab = { "Поиск по коду рабочего", "Поиск по ФИО", "Поиск по полу", "Поиск по возрасту", "Поиск по коду должности", "Поиск по окладу"};
+                      object[] searchRab = { "Поиск по коду рабочего", "Поиск по ФИО", "Поиск по полу", "Поиск по возрасту", "Поиск по коду должности", "Поиск по окладу"};
                       comboBox1.Items.AddRange(searchRab);
                       comboBox1.SelectedIndex = 0;
                       break;
@@ -893,15 +928,13 @@ namespace Arm_zapravka
                   case 6:
                       comboBox1.Items.Clear();
                       //comboBox1.SelectedIndex = 0;
-                      break;                    
-                  default:
                       break;
               } 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string[] searchFuel = { "Поиск по коду топлива", "Поиск по названию топлива", "Поиск по запасам топлива", "Поиск по коду поставки" };
+            object[] searchFuel = { "Поиск по коду топлива", "Поиск по названию топлива", "Поиск по запасам топлива", "Поиск по коду поставки" };
             comboBox1.Items.AddRange(searchFuel);
             comboBox1.SelectedIndex = 0;
             dataGridView2.DataSource = GetFuel();
@@ -913,7 +946,7 @@ namespace Arm_zapravka
             dataGridView7.DataSource = GetPostavka();
         }
 
-        private void dataGridView2_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        public void dataGridView2_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             UpdateFuel();
         }
@@ -951,7 +984,7 @@ namespace Arm_zapravka
         private void button3_Click(object sender, EventArgs e)
         {
             var form2 = new Form2();
-           // form2.Show();            
+            form2.Show();            
         }
 
         private void button4_Click_1(object sender, EventArgs e)
@@ -978,7 +1011,7 @@ namespace Arm_zapravka
                                 textBox1.Text = "";
                                 }
                             if (comboBox1.SelectedIndex == 2){
-                                if (radioButton1.Checked == true){
+                                if (radioButton1.Checked){
                                     string sql = "Запасы_топлива >" + textBox1.Text + "";
                                     DataRowCollection allRows = ((DataTable)dataGridView2.DataSource).Rows;
                                     DataRow[] searchRow = ((DataTable)dataGridView2.DataSource).Select(sql);
@@ -986,7 +1019,7 @@ namespace Arm_zapravka
                                     dataGridView2.CurrentCell = dataGridView2[0, rowIndex];
                                     textBox1.Text = "";
                                 }
-                                if (radioButton2.Checked == true){
+                                if (radioButton2.Checked){
                                     string sql = "Запасы_топлива =" + textBox1.Text + "";
                                     DataRowCollection allRows = ((DataTable)dataGridView2.DataSource).Rows;
                                     DataRow[] searchRow = ((DataTable)dataGridView2.DataSource).Select(sql);
@@ -994,7 +1027,7 @@ namespace Arm_zapravka
                                     dataGridView2.CurrentCell = dataGridView2[0, rowIndex];
                                     textBox1.Text = "";
                                 }
-                                if (radioButton3.Checked == true){
+                                if (radioButton3.Checked){
                                     string sql = "Запасы_топлива <" + textBox1.Text + "";
                                     DataRowCollection allRows = ((DataTable)dataGridView2.DataSource).Rows;
                                     DataRow[] searchRow = ((DataTable)dataGridView2.DataSource).Select(sql);
@@ -1091,12 +1124,7 @@ namespace Arm_zapravka
                         }
                         break;
                     }
-                default:
-                         break;
             }
-      
-
-               
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
