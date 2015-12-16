@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("Arm zapravka")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("АРМ работника автозаправочной станции")]
+[assembly: AssemblyDescription("АРМ работника автозаправочной станции включается в себя ряд таблиц, позволяющих вести учет топлива, рабочих и клиентов.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Ekaterina Kozlova")]
 [assembly: AssemblyProduct("Arm zapravka")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
