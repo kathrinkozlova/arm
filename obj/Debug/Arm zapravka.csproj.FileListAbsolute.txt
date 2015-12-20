@@ -7,7 +7,6 @@ D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\Arm zapravka.exe
 D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\Arm zapravka.pdb
 D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm zapravka.exe
 D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm zapravka.pdb
-D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\fuel.sql.mdf
-D:\курсач бд\Arm zapravka\Arm zapravka\bin\Debug\fuel.sql_log.ldf
 D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.AboutBox1.resources
-D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.ReportForm.resources
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.Form2.resources
+D:\курсач бд\Arm zapravka\Arm zapravka\obj\Debug\Arm_zapravka.Report.resources

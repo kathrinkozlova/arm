@@ -4,27 +4,34 @@ using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 
 
 namespace Arm_zapravka
 {
     public partial class Form1 : Form
     {
-        static readonly string CONNECTION = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
+        public static readonly string CONNECTION = "Server = 127.0.0.1; User = root;" + "password = 123; Database = fuel;";
+        int lastFindRow = 0;
+        int lastFindCell = 0;
+        bool newFind = false;
+        public static int soldFuel, allFuel, codeFuel;
+        bool isSellFuel = false;
+
 
         public Form1()
         {
             InitializeComponent();
         }
 
-       
+
         private void InsertDataFuel()
         {
             using (MySqlConnection con = new MySqlConnection(CONNECTION))
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Виды_топлива (Вид_топлива, Цена, Запасы_топлива, Код_поставщика) 
+                    string sql = @"INSERT INTO Виды_топлива (Вид_топлива, Цена, Запасы_топлива, Код_поставщика) 
                     VALUES (@Вид_топлива, @Цена, @Запасы_топлива, @Код_поставщика);";
 
                     con.Open();
@@ -75,20 +82,29 @@ namespace Arm_zapravka
                 try
                 {
                     string sql = @"UPDATE Виды_топлива
-                                   SET Вид_топлива = @Вид_топлива, Цена = @Цена, Запасы_топлива = @Запасы_топлива, Код_поставки = @Код_поставки
+                                   SET Вид_топлива = @Вид_топлива, Цена = @Цена, Запасы_топлива = @Запасы_топлива, Код_поставщика = @Код_поставщика
                                    WHERE Код_топлива = @Код_топлива";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
 
-                    if (dataGridView2.CurrentRow != null)
+                    if ((dataGridView2.CurrentRow != null) && (isSellFuel == false))
                     {
                         cmd.Parameters.AddWithValue("@Код_топлива", dataGridView2.CurrentRow.Cells[0].Value);
                         cmd.Parameters.AddWithValue("@Вид_топлива", dataGridView2.CurrentRow.Cells[1].Value);
                         cmd.Parameters.AddWithValue("@Цена", dataGridView2.CurrentRow.Cells[2].Value);
                         cmd.Parameters.AddWithValue("@Запасы_топлива", dataGridView2.CurrentRow.Cells[3].Value);
-                        cmd.Parameters.AddWithValue("@Код_поставки", dataGridView2.CurrentRow.Cells[4].Value);
+                        cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView2.CurrentRow.Cells[4].Value);
+                    }
+                    if ((dataGridView2.CurrentRow != null) && (isSellFuel == true))
+                    {
+                        cmd.Parameters.AddWithValue("@Код_топлива", dataGridView2.Rows[codeFuel - 1].Cells[0].Value);
+                        cmd.Parameters.AddWithValue("@Вид_топлива", dataGridView2.Rows[codeFuel - 1].Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Цена", dataGridView2.Rows[codeFuel - 1].Cells[2].Value);
+                        cmd.Parameters.AddWithValue("@Запасы_топлива", dataGridView2.Rows[codeFuel - 1].Cells[3].Value);
+                        cmd.Parameters.AddWithValue("@Код_поставщика", dataGridView2.Rows[codeFuel - 1].Cells[4].Value);
                     }
                     cmd.ExecuteNonQuery();
+                    isSellFuel = false;
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +120,7 @@ namespace Arm_zapravka
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Должности (Должность) 
+                    string sql = @"INSERT INTO Должности (Должность) 
                     VALUES (@Должность);";
 
                     con.Open();
@@ -113,7 +129,7 @@ namespace Arm_zapravka
 
                     if (dataGridView3.CurrentRow != null)
                         cmd.Parameters.AddWithValue("@Должность", dataGridView3.CurrentRow.Cells[1].Value);
-                        cmd.Parameters.AddWithValue("@Оклад", dataGridView3.CurrentRow.Cells[1].Value);
+                    cmd.Parameters.AddWithValue("@Оклад", dataGridView3.CurrentRow.Cells[1].Value);
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -152,7 +168,7 @@ namespace Arm_zapravka
                 try
                 {
                     string sql = @"UPDATE Должности
-                                   SET Должность = @Должность
+                                   SET Должность = @Должность, Оклад = @Оклад
                                    WHERE Код_должности = @Код_должности";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
@@ -179,8 +195,8 @@ namespace Arm_zapravka
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Рабочие (Фамилия, Имя, Отчество, Пол, Возраст, Код_должности, Телефон, Оклад) 
-                    VALUES (@Фамилия,@Имя, @Отчество,@Пол, @Возраст, @Код_должности, @Телефон);";
+                    string sql = @"INSERT INTO Рабочие (Фамилия_рабочего, Имя, Отчество, Пол, Возраст, Код_должности, Телефон) 
+                    VALUES (@Фамилия_рабочего,@Имя, @Отчество,@Пол, @Возраст, @Код_должности, @Телефон);";
 
                     con.Open();
 
@@ -188,7 +204,7 @@ namespace Arm_zapravka
 
                     if (dataGridView4.CurrentRow != null)
                     {
-                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView4.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Фамилия_рабочего", dataGridView4.CurrentRow.Cells[1].Value);
                         cmd.Parameters.AddWithValue("@Имя", dataGridView4.CurrentRow.Cells[2].Value);
                         cmd.Parameters.AddWithValue("@Отчество", dataGridView4.CurrentRow.Cells[3].Value);
                         cmd.Parameters.AddWithValue("@Пол", dataGridView4.CurrentRow.Cells[4].Value);
@@ -234,14 +250,14 @@ namespace Arm_zapravka
                 try
                 {
                     string sql = @"UPDATE Рабочие
-                                   SET Фамилия = @Фамилия, Имя = @Имя, Отчество = @Отчество, Пол = @Пол, Возраст = @Возраст, Код_должности = @Код_должности, Телефон = @Телефон
+                                   SET Фамилия_рабочего = @Фамилия_рабочего, Имя = @Имя, Отчество = @Отчество, Пол = @Пол, Возраст = @Возраст, Код_должности = @Код_должности, Телефон = @Телефон
                                    WHERE Код_рабочего = @Код_рабочего";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     if (dataGridView4.CurrentRow != null)
                     {
                         cmd.Parameters.AddWithValue("@Код_рабочего", dataGridView4.CurrentRow.Cells[0].Value);
-                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView4.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Фамилия_рабочего", dataGridView4.CurrentRow.Cells[1].Value);
                         cmd.Parameters.AddWithValue("@Имя", dataGridView4.CurrentRow.Cells[2].Value);
                         cmd.Parameters.AddWithValue("@Отчество", dataGridView4.CurrentRow.Cells[3].Value);
                         cmd.Parameters.AddWithValue("@Пол", dataGridView4.CurrentRow.Cells[4].Value);
@@ -266,8 +282,8 @@ namespace Arm_zapravka
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Клиенты (Фамилия, Имя, Отчество) 
-                    VALUES (@Фамилия,@Имя, @Отчество);";
+                    string sql = @"INSERT INTO Клиенты (Фамилия_клиента, Имя, Отчество) 
+                    VALUES (@Фамилия_клиента,@Имя, @Отчество);";
 
                     con.Open();
 
@@ -275,7 +291,7 @@ namespace Arm_zapravka
 
                     if (dataGridView1.CurrentRow != null)
                     {
-                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView1.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Фамилия_клиента", dataGridView1.CurrentRow.Cells[1].Value);
                         cmd.Parameters.AddWithValue("@Имя", dataGridView1.CurrentRow.Cells[2].Value);
                         cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);
                     }
@@ -318,20 +334,19 @@ namespace Arm_zapravka
                 try
                 {
                     string sql = @"UPDATE Клиенты
-                                   SET Фамилия = @Фамилия, Имя = @Имя, Отчество = @Отчество
+                                   SET Фамилия_клиента = @Фамилия_клиента, Имя = @Имя, Отчество = @Отчество
                                    WHERE Код_клиента = @Код_клиента";
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     if (dataGridView1.CurrentRow != null)
                     {
                         cmd.Parameters.AddWithValue("@Код_клиента", dataGridView1.CurrentRow.Cells[0].Value);
-                        cmd.Parameters.AddWithValue("@Фамилия", dataGridView1.CurrentRow.Cells[1].Value);
+                        cmd.Parameters.AddWithValue("@Фамилия_клиента", dataGridView1.CurrentRow.Cells[1].Value);
                         cmd.Parameters.AddWithValue("@Имя", dataGridView1.CurrentRow.Cells[2].Value);
-                        cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);                       
+                        cmd.Parameters.AddWithValue("@Отчество", dataGridView1.CurrentRow.Cells[3].Value);
                     }
                     cmd.ExecuteNonQuery();
                 }
-
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
@@ -339,37 +354,48 @@ namespace Arm_zapravka
             }
         }
 
-
+              
         private void InsertDataSale()
         {
-            using (MySqlConnection con = new MySqlConnection(CONNECTION))
+            ChangeValue();
+            if (Convert.ToInt32(allFuel) < Convert.ToInt32(soldFuel))
+                MessageBox.Show("Недостаточно ресурсов - закажите топливо", "Ошибка");
+            else
             {
-                try
+                using (MySqlConnection con = new MySqlConnection(CONNECTION))
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Продажа (Код_топлива, Код_рабочего, Количество_топлива, Дата) 
-                    VALUES (@Код_топлива, @Код_рабочего, @Количество_топлива, @Дата);";
-
-                    con.Open();
-
-                    MySqlCommand cmd = new MySqlCommand(sql, con);
-
-                    //создаем параметры и добавляем их в коллекцию
-                    if (dataGridView5.CurrentRow != null)
+                    try
                     {
-                        
-                        cmd.Parameters.AddWithValue("@Код_топлива", dataGridView5.CurrentRow.Cells[1].Value);
-                        cmd.Parameters.AddWithValue("@Код_рабочего", dataGridView5.CurrentRow.Cells[2].Value);
-                        cmd.Parameters.AddWithValue("@Количество_топлива", dataGridView5.CurrentRow.Cells[3].Value);
-                        cmd.Parameters.AddWithValue("@Дата", dataGridView5.CurrentRow.Cells[4].Value);
-                        
+                        string sql = @"INSERT INTO Продажа (Код_клиента, Код_топлива, Код_рабочего, Количество_топлива, Дата) 
+                                    VALUES (@Код_клиента, @Код_топлива, @Код_рабочего, @Количество_топлива, @Дата);";
+
+                        con.Open();
+
+                        MySqlCommand cmd = new MySqlCommand(sql, con);
+
+                        //создаем параметры и добавляем их в коллекцию
+                        if (dataGridView5.CurrentRow != null)
+                        {
+                            cmd.Parameters.AddWithValue("@Код_клиента", dataGridView5.CurrentRow.Cells[0].Value);
+                            cmd.Parameters.AddWithValue("@Код_топлива", dataGridView5.CurrentRow.Cells[1].Value);
+                            cmd.Parameters.AddWithValue("@Код_рабочего", dataGridView5.CurrentRow.Cells[2].Value);
+                            cmd.Parameters.AddWithValue("@Количество_топлива", dataGridView5.CurrentRow.Cells[3].Value);
+                            cmd.Parameters.AddWithValue("@Дата", dataGridView5.CurrentRow.Cells[4].Value);
+
+                        }
+                        cmd.ExecuteNonQuery();
+
                     }
-                    cmd.ExecuteNonQuery();
-                    
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                allFuel -= soldFuel;
+                dataGridView2.Rows[codeFuel - 1].Cells[3].Value = allFuel;
+                isSellFuel = true;
+                UpdateFuel();
+                UpdateSale();
             }
         }
 
@@ -380,12 +406,12 @@ namespace Arm_zapravka
                 try
                 {
                     string sql = @"SET FOREIGN_KEY_CHECKS=0;
-                                  DELETE FROM Продажа " +
-                                  "WHERE Код_клиента = @Код_клиента";
+                                  DELETE FROM Продажа
+                                  WHERE Код_продажи = @Код_продажи";
 
                     con.Open();
                     MySqlCommand cmd = new MySqlCommand(sql, con);
-                    cmd.Parameters.AddWithValue("@Код_клиента", dataGridView5.CurrentRow.Cells[0].Value);
+                    cmd.Parameters.AddWithValue("@Код_продажи", dataGridView5.CurrentRow.Cells[5].Value);                 
                     cmd.ExecuteNonQuery();
                 }
 
@@ -402,13 +428,11 @@ namespace Arm_zapravka
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; 
-                                   UPDATE Продажа 
-                                   SET  Код_топлива = @Код_топлива, Код_рабочего = @Код_рабочего, Количество_топлива = @Количество_топлива, Дата = @Дата
-                                   WHERE Код_клиента = @Код_клиента
-                                  ";
+                    string sql = @"UPDATE Продажа 
+                                   SET  Код_клиента = @Код_клиента, Код_топлива = @Код_топлива, Код_рабочего = @Код_рабочего, Количество_топлива = @Количество_топлива, Дата = @Дата
+                                   WHERE Код_продажи = @Код_продажи";
                     con.Open();
-                    
+
                     MySqlCommand cmd = new MySqlCommand(sql, con);
                     if (dataGridView5.CurrentRow != null)
                     {
@@ -417,6 +441,7 @@ namespace Arm_zapravka
                         cmd.Parameters.AddWithValue("@Код_топлива", dataGridView5.CurrentRow.Cells[2].Value);
                         cmd.Parameters.AddWithValue("@Количество_топлива", dataGridView5.CurrentRow.Cells[3].Value);
                         cmd.Parameters.AddWithValue("@Дата", dataGridView5.CurrentRow.Cells[4].Value);
+                        cmd.Parameters.AddWithValue("@Код_продажи", dataGridView5.CurrentRow.Cells[4].Value);
                     }
                     cmd.ExecuteNonQuery();
                 }
@@ -435,7 +460,7 @@ namespace Arm_zapravka
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Поставщики (Наименование_организации, Телефон_организации) 
+                    string sql = @"INSERT INTO Поставщики (Наименование_организации, Телефон_организации) 
                     VALUES (@Наименование_организации, @Телефон_организации);";
 
                     con.Open();
@@ -508,11 +533,12 @@ namespace Arm_zapravka
 
         private void InsertDataPostavka()
         {
+            Postavka();
             using (MySqlConnection con = new MySqlConnection(CONNECTION))
             {
                 try
                 {
-                    string sql = @"SET FOREIGN_KEY_CHECKS=0; INSERT INTO Поставка_топлива (Код_поставщика, Количество_поставки, Код_топлива) 
+                    string sql = @"INSERT INTO Поставка_топлива (Код_поставщика, Количество_поставки, Код_топлива) 
                     VALUES (@Код_поставщика, @Количество_поставки, @Код_топлива);";
 
                     con.Open();
@@ -526,6 +552,11 @@ namespace Arm_zapravka
                         cmd.Parameters.AddWithValue("@Код_топлива", dataGridView7.CurrentRow.Cells[3].Value);
                     }
                     cmd.ExecuteNonQuery();
+                    allFuel += soldFuel;
+                    dataGridView2.Rows[codeFuel - 1].Cells[3].Value = allFuel;
+                    isSellFuel = true;
+                    UpdateFuel();
+                    UpdatePostavka();
                 }
                 catch (Exception ex)
                 {
@@ -585,15 +616,19 @@ namespace Arm_zapravka
         }
 
 
-
         private void button1_Click(object sender, EventArgs e)
         {
             switch (tabControl1.SelectedIndex)
             {
                 case 0:
                     {
-                        InsertDataFuel();
-                        dataGridView2.DataSource = BD.GetFuel();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для добавления новых данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            InsertDataFuel();
+                            dataGridView2.DataSource = BD.GetFuel();
+                        }
                         break;
                     }
                 case 1:
@@ -604,8 +639,13 @@ namespace Arm_zapravka
                     }
                 case 2:
                     {
-                        InsertDataRab();
-                        dataGridView4.DataSource = BD.GetRab();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для добавления новых данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            InsertDataRab();
+                            dataGridView4.DataSource = BD.GetRab();
+                        }
                         break;
                     }
                 case 3:
@@ -616,8 +656,13 @@ namespace Arm_zapravka
                     }
                 case 4:
                     {
-                        InsertDataSale();
-                        dataGridView5.DataSource = BD.GetSale();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для добавления новых данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            InsertDataSale();
+                            dataGridView5.DataSource = BD.GetSale();
+                        }
                         break;
                     }
                 case 5:
@@ -628,8 +673,13 @@ namespace Arm_zapravka
                     }
                 case 6:
                     {
-                        InsertDataPostavka();
-                        dataGridView7.DataSource = BD.GetPostavka();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для добавления новых данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            InsertDataPostavka();
+                            dataGridView7.DataSource = BD.GetPostavka();
+                        }
                         break;
                     }
             }
@@ -641,8 +691,13 @@ namespace Arm_zapravka
             {
                 case 0:
                     {
-                        DeleteFuel();
-                        dataGridView2.DataSource = BD.GetFuel();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для удаления данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            DeleteFuel();
+                            dataGridView2.DataSource = BD.GetFuel();
+                        }
                         break;
                     }
                 case 1:
@@ -653,8 +708,13 @@ namespace Arm_zapravka
                     }
                 case 2:
                     {
-                        DeleteRab();
-                        dataGridView4.DataSource = BD.GetRab();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для удаления данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            DeleteRab();
+                            dataGridView4.DataSource = BD.GetRab();
+                        }
                         break;
                     }
                 case 3:
@@ -665,8 +725,13 @@ namespace Arm_zapravka
                     }
                 case 4:
                     {
-                        DeleteSale();
-                        dataGridView5.DataSource = BD.GetSale();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для удаления данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            DeleteSale();
+                            dataGridView5.DataSource = BD.GetSale();
+                        }
                         break;
                     }
                 case 5:
@@ -677,71 +742,34 @@ namespace Arm_zapravka
                     }
                 case 6:
                     {
-                        DeletePostavka();
-                        dataGridView7.DataSource = BD.GetPostavka();
+                        if (checkBox1.Checked)
+                            MessageBox.Show("Для удаления данных перейдите в режим обычной таблицы", "Внимание");
+                        else
+                        {
+                            DeletePostavka();
+                            dataGridView7.DataSource = BD.GetPostavka();
+                        }
                         break;
                     }
             }
         }
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            dataGridView2.DataSource = BD.GetFuel();
-            dataGridView1.DataSource = BD.GetClient();
-            dataGridView3.DataSource = BD.GetDol();
-            dataGridView4.DataSource = BD.GetRab();
-            dataGridView5.DataSource = BD.GetSale();
-            dataGridView6.DataSource = BD.GetPostavshiki();
-            dataGridView7.DataSource = BD.GetPostavka();
+            LoadForms();
         }
 
-        public void dataGridView2_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+
+       private void button3_Click(object sender, EventArgs e)
         {
-            UpdateFuel();
+            var otchet = new Report();
+            otchet.ShowDialog();            
         }
 
-        private void dataGridView3_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            UpdateDol();
-        }
-
-        private void dataGridView4_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            UpdateRab();
-        }
-
-        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            UpdateClient();
-        }
-
-        private void dataGridView5_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            UpdateSale();
-        }
-
-        private void dataGridView6_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            UpdatePostavshiki();
-        }
-
-        private void dataGridView7_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            UpdatePostavka();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            //var form2 = new Form2();
-            //form2.Show();            
-        }
 
         private void Search(DataGridView grid)
         {
-            int lastFindRow = 0;
-            int lastFindCell = 0;
-            bool newFind = false;
-
             try
             {
                 if (!newFind)
@@ -806,32 +834,36 @@ namespace Arm_zapravka
             }
         }
 
+
         private void button4_Click_1(object sender, EventArgs e)
-        {       
-             switch (tabControl1.SelectedIndex)
+        {
+            switch (tabControl1.SelectedIndex)
             {
                 case 0:
                     {
-                       try { 
-                           Search(dataGridView2);
-                           }
-                       catch (Exception ex){
-                            MessageBox.Show(ex.Message);
-                           }
-                            break;                        
-                    }
-                case 1:
-                    {
                         try
-                        {                           
-                            Search(dataGridView3);
+                        {
+                            Search(dataGridView2);
                         }
-                        catch (Exception ex){
+                        catch (Exception ex)
+                        {
                             MessageBox.Show(ex.Message);
                         }
                         break;
                     }
-                      case 2:
+                case 1:
+                    {
+                        try
+                        {
+                            Search(dataGridView3);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        break;
+                    }
+                case 2:
                     {
                         try
                         {
@@ -843,7 +875,7 @@ namespace Arm_zapravka
                         }
                         break;
                     }
-                      case 3:
+                case 3:
                     {
                         try
                         {
@@ -855,7 +887,7 @@ namespace Arm_zapravka
                         }
                         break;
                     }
-                      case 4:
+                case 4:
                     {
                         try
                         {
@@ -867,7 +899,7 @@ namespace Arm_zapravka
                         }
                         break;
                     }
-                      case 5:
+                case 5:
                     {
                         try
                         {
@@ -879,7 +911,7 @@ namespace Arm_zapravka
                         }
                         break;
                     }
-                      case 6:
+                case 6:
                     {
                         try
                         {
@@ -894,11 +926,13 @@ namespace Arm_zapravka
             }
         }
 
+
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             AboutBox1 about = new AboutBox1();
             about.ShowDialog();
         }
+
 
         public static void CheckDigit(KeyPressEventArgs e)
         {
@@ -912,17 +946,24 @@ namespace Arm_zapravka
                 e.Handled = true;
         }
 
+        public static void CheckGender(KeyPressEventArgs e)
+        {
+            if (e.KeyChar != 8 && e.KeyChar != 'М' && e.KeyChar != 'Ж')
+                e.Handled = true;
+        }
+
+
+
         private void dataGridView2_KeyPress(object sender, KeyPressEventArgs e)
         {
             var row = dataGridView2.CurrentRow.Cells;
 
             if (dataGridView2.CurrentRow != null && (row[2].IsInEditMode || row[3].IsInEditMode || row[4].IsInEditMode))
-               CheckDigit(e);
+                CheckDigit(e);
         }
 
         private void dataGridView2_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView2.CurrentRow != null) dataGridView2.CurrentRow.Cells[0].ReadOnly = true;
             var value = ((DataGridView)sender).CurrentCell.OwningColumn.Name;
             switch (value)
             {
@@ -936,6 +977,7 @@ namespace Arm_zapravka
             }
         }
 
+
         private void dataGridView3_KeyPress(object sender, KeyPressEventArgs e)
         {
             var row = dataGridView3.CurrentRow.Cells;
@@ -948,7 +990,6 @@ namespace Arm_zapravka
 
         private void dataGridView3_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView3.CurrentRow != null) dataGridView3.CurrentRow.Cells[0].ReadOnly = true;
             var value = ((DataGridView)sender).CurrentCell.OwningColumn.Name;
             switch (value)
             {
@@ -960,11 +1001,6 @@ namespace Arm_zapravka
             }
         }
 
-        public static void CheckGender(KeyPressEventArgs e)
-        {
-            if (e.KeyChar != 8 && e.KeyChar != 'М' && e.KeyChar != 'Ж')
-                e.Handled = true;
-        }
 
         private void dataGridView4_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -981,11 +1017,10 @@ namespace Arm_zapravka
 
         private void dataGridView4_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView4.CurrentRow != null) dataGridView4.CurrentRow.Cells[0].ReadOnly = true;
             var value = ((DataGridView)sender).CurrentCell.OwningColumn.Name;
             switch (value)
             {
-                case "Фамилия":
+                case "Фамилия_рабочего":
                 case "Имя":
                 case "Отчество":
                 case "Пол":
@@ -998,13 +1033,13 @@ namespace Arm_zapravka
             }
         }
 
+
         private void dataGridView1_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView1.CurrentRow != null) dataGridView1.CurrentRow.Cells[0].ReadOnly = true;
             var value = ((DataGridView)sender).CurrentCell.OwningColumn.Name;
             switch (value)
             {
-                case "Фамилия":
+                case "Фамилия_клиента":
                 case "Имя":
                 case "Отчество":
                     e.Control.KeyPress -= dataGridView1_KeyPress;
@@ -1020,6 +1055,7 @@ namespace Arm_zapravka
             if (dataGridView1.CurrentRow != null && (row[1].IsInEditMode || row[2].IsInEditMode || row[3].IsInEditMode))
                 CheckLetter(e);
         }
+
 
         private void dataGridView5_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -1044,6 +1080,7 @@ namespace Arm_zapravka
             }
         }
 
+
         private void dataGridView6_KeyPress(object sender, KeyPressEventArgs e)
         {
             var row = dataGridView6.CurrentRow.Cells;
@@ -1056,7 +1093,6 @@ namespace Arm_zapravka
 
         private void dataGridView6_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView6.CurrentRow != null) dataGridView6.CurrentRow.Cells[0].ReadOnly = true;
             var value = ((DataGridView)sender).CurrentCell.OwningColumn.Name;
             switch (value)
             {
@@ -1068,9 +1104,9 @@ namespace Arm_zapravka
             }
         }
 
+
         private void dataGridView7_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dataGridView7.CurrentRow != null) dataGridView7.CurrentRow.Cells[0].ReadOnly = true;
             var value = ((DataGridView)sender).CurrentCell.OwningColumn.Name;
             switch (value)
             {
@@ -1090,5 +1126,217 @@ namespace Arm_zapravka
             if (dataGridView7.CurrentRow != null && (row[1].IsInEditMode || row[2].IsInEditMode || row[3].IsInEditMode))
                 CheckDigit(e);
         }
+        
+
+        private void dataGridView5_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+        private void dataGridView2_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+        private void dataGridView3_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+        private void dataGridView4_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+        private void dataGridView1_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+        private void dataGridView6_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+        private void dataGridView7_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show("Вы не сохранили данные, точно хотите выйти?", "Выход", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+
+        private void dataGridView5_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (dataGridView5.CurrentRow.Cells[0].Selected == true)
+            {
+                Form2.ComboSelect = "Клиент";
+                Form2 form2 = new Form2(dataGridView5.CurrentRow.Index, dataGridView5);
+                form2.ShowDialog();
+            }
+            if (dataGridView5.CurrentRow.Cells[1].Selected == true)
+            {
+                Form2.ComboSelect = "Топливо";
+                Form2 form2 = new Form2(dataGridView5.CurrentRow.Index, dataGridView5);
+                form2.ShowDialog();
+            }
+            if (dataGridView5.CurrentRow.Cells[2].Selected == true)
+            {
+                Form2.ComboSelect = "Фамилия_рабочего";
+                Form2 form2 = new Form2(dataGridView5.CurrentRow.Index, dataGridView5);
+                form2.ShowDialog();
+            }
+            if (dataGridView5.CurrentRow.Cells[4].Selected == true)
+            {
+                dataGridView5.CurrentRow.Cells[4].Value = DateTime.Today;
+            }
+
+        }
+
+        private void dataGridView2_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (dataGridView2.CurrentRow.Cells[4].Selected == true)
+            {
+                Form2.ComboSelect = "Наименование_организации";
+                Form2 form2 = new Form2(dataGridView2.CurrentRow.Index, dataGridView2);
+                form2.ShowDialog();
+
+            }
+        }
+
+        private void dataGridView4_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (dataGridView4.CurrentRow.Cells[6].Selected == true)
+            {
+                Form2.ComboSelect = "Должность";
+                Form2 form2 = new Form2(dataGridView4.CurrentRow.Index, dataGridView4);
+                form2.ShowDialog();
+            }
+        }
+
+        private void dataGridView7_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (dataGridView7.CurrentRow.Cells[1].Selected)
+            {
+                Form2.ComboSelect = "Наименование_организации++";
+                Form2 form2 = new Form2(dataGridView7.CurrentRow.Index, dataGridView7);
+                form2.ShowDialog();
+            }
+
+            if (dataGridView7.CurrentRow.Cells[3].Selected && dataGridView7.CurrentRow.Cells[1].Value.ToString() != "")
+            {
+                Form2.ComboSelect = "Топливо++";
+                Form2 form2 = new Form2(dataGridView7.CurrentRow.Index, dataGridView7);
+                form2.ShowDialog();
+            }
+            
+        }
+
+        private void ChangeValue()
+        {
+            if ((dataGridView5.CurrentRow.Cells[3].Value != null) && (dataGridView5.CurrentRow.Cells[1].Value != null))
+            {
+                string _soldFuel = dataGridView5.CurrentRow.Cells[3].Value.ToString();
+                string _codeFuel = dataGridView5.CurrentRow.Cells[1].Value.ToString();
+                soldFuel = Int32.Parse(_soldFuel);
+                codeFuel = Int32.Parse(_codeFuel);
+                BD.GetSoldFuel();  
+            }
+
+        }
+
+        private void Postavka()
+        { 
+            if ((dataGridView7.CurrentRow.Cells[1].Value != null) && (dataGridView7.CurrentRow.Cells[2].Value != null) && (dataGridView7.CurrentRow.Cells[3].Value != null))
+            {
+                string _soldFuel = dataGridView7.CurrentRow.Cells[2].Value.ToString();
+                string _codeFuel = dataGridView7.CurrentRow.Cells[3].Value.ToString();
+                soldFuel = Int32.Parse(_soldFuel);
+                codeFuel = Int32.Parse(_codeFuel);
+                BD.GetSoldFuel();
+            }
+        }
+
+        private void dataGridView2_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateFuel();
+        }
+
+        private void dataGridView3_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateDol();
+        }
+
+        private void dataGridView4_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateRab();
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateClient();
+        }
+
+        private void dataGridView5_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdateSale();
+        }
+
+        private void dataGridView6_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdatePostavshiki();
+        }
+
+        private void dataGridView7_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            UpdatePostavka();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                dataGridView2.DataSource = BD.GetFuelAll();
+                dataGridView2.Enabled = false;
+                dataGridView4.DataSource = BD.GetRabAll();
+                dataGridView4.Enabled = false;
+                dataGridView5.DataSource = BD.GetSaleAll();
+                dataGridView5.Enabled = false;
+                dataGridView7.DataSource = BD.GetPostavkaAll();
+                dataGridView7.Enabled = false;
+            }
+            else LoadForms();
+        }
+
+        private void LoadForms()
+        {
+            dataGridView2.Enabled = true;
+            dataGridView4.Enabled = true;
+            dataGridView5.Enabled = true;
+            dataGridView7.Enabled = true;
+            dataGridView2.DataSource = BD.GetFuel();
+            dataGridView1.DataSource = BD.GetClient();
+            dataGridView3.DataSource = BD.GetDol();
+            dataGridView4.DataSource = BD.GetRab();
+            dataGridView5.DataSource = BD.GetSale();
+            dataGridView6.DataSource = BD.GetPostavshiki();
+            dataGridView7.DataSource = BD.GetPostavka();
+        }
+
+        private void dataGridView7_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if ((dataGridView7.CurrentRow.Cells[3].Selected) && (dataGridView7.CurrentRow.Cells[1].Value.ToString() == ""))
+            {
+                MessageBox.Show("Заполните данные об организации", "Ошибка");
+                dataGridView7.CurrentRow.Cells[3].ReadOnly = true;
+            }
+            if (dataGridView7.CurrentRow.Cells[1].Value.ToString() != "")
+                dataGridView7.CurrentRow.Cells[3].ReadOnly = false;
+
+
+        }
+
+
+
+
     }
 }
