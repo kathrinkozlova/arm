@@ -120,7 +120,10 @@ namespace Arm_zapravka
                         datagrid.CurrentRow.Cells[1].Value = index + 1;
                         break;
                     case "Топливо++":
+                        if (datagrid.CurrentRow.Cells[1].Value.ToString() == "1")
                         datagrid.CurrentRow.Cells[3].Value = index + 1;
+                        if (datagrid.CurrentRow.Cells[1].Value.ToString() == "2")
+                            datagrid.CurrentRow.Cells[3].Value = index + 4;
                         break;
                     case "Клиент":
                         datagrid.CurrentRow.Cells[0].Value = index + 1;
